@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>查看评分</title>
+    <link rel="stylesheet" href="../vendor/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="../vendor/font-awesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
+    <LINK REL="stylesheet" href="css/validationEngine.jquery.css">
+</head>
+<body class="sidebar-fixed header-fixed">
+
+<div class="page-wrapper">
+    <div class="page-header">
+        <nav class="navbar page-header">
+            <a href="#" class="btn btn-link sidebar-mobile-toggle d-md-none mr-auto">
+                <i class="fa fa-bars"></i>
+            </a>
+            <a href="#" class="btn btn-link sidebar-toggle d-md-down-none">
+                <i class="fa fa-bars"></i>
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav">
+                    <li class="nav-title">导航</li>
+
+
+                    <li class="nav-item nav-dropdown open">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-graph"></i> 卫生评分 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items open">
+                            <li class="nav-item">
+                                <a href="initiateGrade.html" class="nav-link">
+                                    <i class="icon icon-graph"></i> 填写评分
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="showGrade.html" class="nav-link">
+                                    <i class="icon icon-graph"></i> 查看评分
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item nav-dropdown">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-energy"></i> 公物报修 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a href="repairs.html" class="nav-link">
+                                    <i class="icon icon-energy"></i> 报修列表
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+
+                    <li class="nav-item nav-dropdown">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-target"></i> 我的 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a href="settings_worker.html" class="nav-link">
+                                    <i class="icon icon-target"></i> 个人资料
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" onclick="location.href='/logout'" class="nav-link">
+                            <i class="icon icon-puzzle"></i> 退出登录
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="content">
+            <form id="searchForm" action="/grade/getGrade" method="get">
+                <h1>查询评分</h1>
+                <div class="card-body py-5">
+                    <div class="form-group" style="width: 100px;float: left;">
+                        <label class="form-control-label">楼号</label>
+                        <input type="number" name="buildingNum" class="form-control">
+                    </div>
+                    <div class="form-group" style="width: 100px;float: left;margin-left: 1rem">
+                        <label class="form-control-label">宿舍号</label>
+                        <input type="number" name="roomNum" class="form-control">
+                    </div>
+
+                    <div class="form-group" style="width: 100px;float: left;margin-left: 1rem">
+                        <label class="form-control-label">日期</label>
+                        <input id="date" type="text" name="time" class="form-control" readonly>
+                    </div>
+                    <div class="form-group" style="width: 100px;float: left;margin-left: 1rem">
+                        <label class="form-control-label"></label>
+                        <button onclick="vm.getGrade()"  class="btn btn-success btn-block form-control" style="width: 100px;margin-top: 8px">查询
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div class="card-body" id="app">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>楼号</th>
+                            <th>房间号</th>
+                            <th>评分</th>
+                            <th>评分时间</th>
+                            <th>更新时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr  id="data">
+                            <td>{{grade.buildingNum}}</td>
+                            <td class="text-nowrap">{{grade.roomNum}}</td>
+                            <td>{{grade.grade}}</td>
+                            <td>{{grade.time}}</td>
+                            <td>{{grade.createTime}}</td>
+                        </tr>
+                        <tr  id="msg">
+                            <td colspan="5" style="text-align: center">无数据</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div id="pagination" style="text-align: center;margin-top: 50px">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--提交表单时弹出模态框-->
+<script src="../vendor/jquery/jquery.min.js"></script>
+<script src="../vendor/popper.js/popper.min.js"></script>
+<script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="../vendor/chart.js/chart.min.js"></script>
+<script src="../js/carbon.js"></script>
+<script src="../js/demo.js"></script>
+<script src="js/jquery.validationEngine.js"></script>
+<script src="js/jquery.validationEngine-zh_CN.js"></script>
+<script src="js/bootstrap-datetimepicker.min.js"></script>
+<script src="js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/jquery-form.js"></script>
+<script src="js/vue.js"></script>
+<script>
+    $(function () {
+        $("#searchForm").validationEngine('attach', {
+            relative: true,
+            scroll: true,
+            custom_error_messages: {
+                required: {
+                    message: '这里不能是空的啦'
+                },
+            },
+            ajaxFormValidation: true,
+            overflownDIV: "#divPostion",
+            promptPosition: "bottomRight" //验证弹出框的位置，topRight,topLeft,bottomRight,bottomLeft,centerRight,centerLeft,inline
+        });
+        $('#date').datetimepicker({
+            language: 'zh-CN',
+            /*startDate:new Date(),*/
+            autoclose: true,
+            format: 'yyyy-mm-dd hh:ii:ss'
+        });
+    })
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            grade: ''
+        },
+        mounted: function () {
+            this.getmodel();
+        },
+        methods: {
+            getmodel: function (page) {
+            },
+            getGrade: function () {
+                var state = $("#searchForm").validationEngine('validate');
+                if (!state) {
+                    return;
+                }
+                $("#searchForm").ajaxSubmit({
+                    dataType: "json",
+                    async: false,
+                    beforeSubmit: function (formData, jqForm, options) {
+                        tipIndex = parent.layer.load(1, {
+                            shade: 0.01
+                        });
+                    },
+                    success: function (ret) {
+                        if (ret.state!='ok'){
+                            $("#msg").show();
+                            $("#data").hide();
+                        }else{
+                            $("#msg").hide();
+                            $("#data").show();
+                        }
+                       vm.grade=ret.grade
+
+                    },
+                    complete: function (ret) {
+                        parent.layer.close(tipIndex);
+                    }
+                })
+
+
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

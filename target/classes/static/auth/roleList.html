@@ -1,0 +1,118 @@
+<link rel="stylesheet" href="/css/layui.css">
+<style>
+    .box-footer {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 3px;
+        border-bottom-left-radius: 3px;
+        border-top: 1px solid #f4f4f4;
+        padding: 10px;
+        background-color: #ffffff;
+    }
+</style>
+<div xmlns="" xmlns:v-bind="http://www.w3.org/1999/xhtml" id="app">
+
+
+    <!--表格-->
+    <fieldset class="layui-elem-field">
+        <legend>查询结果</legend>
+        <div class="layui-field-box">
+            <form id="roles">
+            <table class="layui-table" lay-even="" lay-skin="nob">
+
+                <thead>
+                <tr>
+                    <th style="width: 5%;text-align: center">选择</th>
+                    <th style="width: 5%;text-align: center">序号</th>
+                    <th style="width: 10%;text-align: center">名称</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(item,index) in list.list">
+                    <td style="width: 5%;text-align: center">
+                        <input type="checkbox" name="roleIds" :value="item.id">
+                    </td>
+                    <td style="width: 5%;text-align: center">{{index+1}}</td>
+                    <td style="width: 10%;text-align: center">{{item.name}}</td>
+                </tr>
+                </tbody>
+            </table>
+            </form>
+        </div>
+    </fieldset>
+    <div class="box-footer" style="float: right">
+        <a href="javascript:void (0)" class="layui-btn layui-btn-normal layui-btn-sm" lay-even="search" @click="save()">保存</a>
+        <!--<a href="javascript: void(0);" class="button" onclick="parent.layer.closeAll();"><i class="fa fa-reply"></i> 保存</a>-->
+    </div>
+</div>
+
+<!--自定义脚本-->
+<script src="/js/vue.js"></script>
+<script src="/js/jquery.min.js"></script>
+<script src="/lay/modules/layer.js"></script>
+<!--<script src="bootstrap.min.js"></script>-->
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            list: '',
+            id:""
+        },
+        mounted: function () {
+            this.getmodel();
+        },
+        methods: {
+            getmodel: function (page) {
+                var id=localStorage["id"]
+                this.id=id
+                layer.load(1, {
+                    shade: false
+                });
+                $.ajax({
+                    url: "/auth/getUsefulRoles",
+                    data: {
+                        id:id
+                    },
+                    success: function (data) {
+                        vm.list = data;
+                        layer.closeAll();
+                    }
+                })
+
+            },
+            fly: function () {
+                this.getmodel()
+            },
+            save:function () {
+                var ids=""
+                $('input:checkbox:checked').each(function (item,value) {
+                    ids+=$(this).val()
+                    if (item+1!=$('input:checkbox:checked').length) {
+                        ids+=","
+                    }
+                })
+                $.ajax({
+                    url:"/auth/bindRoles",
+                    data:{
+                        ids:ids,
+                        id:this.id
+                    },
+                    success:function(data){
+                       if(data.msg=="ok"){
+                           parent.parent.layer.msg("绑定成功!",{
+                               time:5000,
+                               end:parent.window.location.reload()
+                           })
+                           parent.layer.closeAll()
+                       }else {
+                           layer.msg("绑定失败!")
+                       }
+
+                    }
+                })
+            }
+
+
+        }
+    });
+</script>

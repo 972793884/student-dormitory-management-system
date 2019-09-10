@@ -1,0 +1,218 @@
+<link rel="stylesheet" href="/css/layui.css">
+<div xmlns="" xmlns:v-bind="http://www.w3.org/1999/xhtml" id="app">
+    <blockquote class="layui-elem-quote">资源</blockquote>
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>查询条件</legend>
+        <div class="layui-form-item" style="margin-top: 20px;margin-bottom: 5px">
+            <label class="layui-form-label">父菜单</label>
+            <div class="layui-input-inline">
+                <input id="age" type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入父菜单"
+                       class="layui-input">
+            </div>
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-inline">
+                <input id="name" type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入名称"
+                       class="layui-input">
+            </div>
+            <button class="layui-btn " @click="getstudent()">查询</button>
+        </div>
+    </fieldset>
+
+    <!--表格-->
+    <fieldset class="layui-elem-field">
+        <legend>查询结果</legend>
+        <div class="layui-field-box">
+            <table class="layui-table" lay-even="" lay-skin="nob">
+                <colgroup>
+                    <col width="200">
+                    <col width="200">
+                    <col width="200">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <!-- <tr>
+                     <td style="text-align: center">无结果</td>
+                 </tr>-->
+                <thead>
+                <tr>
+                    <th style="width: 5%;text-align: center">id</th>
+                    <th style="width: 10%;text-align: center">名称</th>
+                    <th style="width: 10%;text-align: center">父菜单</th>
+                    <th style="width: 10%;text-align: center">是否需要拥有所有角色</th>
+                    <th style="width: 10%;text-align: center">是否需要拥有所有资源</th>
+                    <th style="width: 10%;text-align: center">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="item in list.list">
+                    <td style="width: 5%;text-align: center">{{item.id}}</td>
+                    <td style="width: 10%;text-align: center">{{item.name}}</td>
+                    <td style="width: 10%;text-align: center">{{item.url}}</td>
+                    <td style="width: 10%;text-align: center">{{item.needallroles==1?"是":"否"}}</td>
+                    <td style="width: 10%;text-align: center">{{item.needallprems==1?"是":"否"}}</td>
+                    <td style="width: 10%;text-align: center">
+                        <a href="javascript:void (0)" class="layui-btn layui-btn-normal layui-btn-sm" lay-even="search" @click="search(item.id)">查看</a>
+                        <a href="javascript:void (0)" class="layui-btn layui-btn-sm" lay-even="edit" @click="update(item.id,item.needallroles,item.needallprems)">修改</a>
+                        <a href="javascript:void (0)" class="layui-btn layui-btn-danger layui-btn-sm"
+                           lay-even="del">删除</a>
+                    </td>
+                </tr>
+                <tr v-if="list.max==0">
+                    <td colspan="5" style="text-align: center"><h3 style="margin-top: 5px">搜索无结果</h3></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <!--分页-->
+        <div class="layui-table-page" id="myPage">
+            <div id="layui-table-page7">
+                <div class="layui-box layui-laypage layui-laypage-default">
+                    <a href="javascript:;" class="layui-laypage-prev " v-bind:class="{'layui-disabled':isActive}"
+                       @click="getstudent(list.page-1)">
+                        <i class="layui-icon"></i>
+                    </a>
+                    <a href="javascript:;" v-if="list.page-3>0" @click="getstudent(1)">1</a>
+                    <span class="layui-laypage-spr" v-if="list.page-3>0">...</span>
+                    <a href="javascript:;" v-if="list.page-2>0" @click="getstudent(list.page-2)">{{list.page-2}}</a>
+                    <a href="javascript:;" v-if="list.page-1>0" @click="getstudent(list.page-1)">{{list.page-1}}</a>
+                    <span class="layui-laypage-curr">
+                    <em class="layui-laypage-em"></em>
+                    <em>{{list.page}}</em>
+                </span>
+                    <a href="javascript:;" v-if="list.page+1<=list.maxPage" @click="getstudent(list.page+1)">{{list.page+1}}</a>
+                    <a href="javascript:;" v-if="list.page+2<=list.maxPage" @click="getstudent(list.page+2)">{{list.page+2}}</a>
+                    <span class="layui-laypage-spr" v-if="list.page+2<list.maxPage">...</span>
+                    <a href="javascript:;" class="layui-laypage-last" title="尾页" v-if="list.page+2<list.maxPage"
+                       @click="getstudent(list.maxPage)">{{list.maxPage}}</a>
+                    <a href="javascript:;" class="layui-laypage-next" @click="getstudent(list.page+1)"
+                       v-bind:class="{'layui-disabled':isActive2}">
+                        <i class="layui-icon"></i>
+                    </a>
+                    <input id="maxPage" type="hidden" :value="list.maxPage">
+                    <span class="layui-laypage-skip">
+                    到第
+                    <input id="fly" type="text" min="1" :value="list.page" class="layui-input">
+                    页
+                    <button type="button" class="layui-laypage-btn" @click="fly()">确定</button>
+                </span>
+                    <span class="layui-laypage-count">共{{list.max}}条</span>
+                    <span class="layui-laypage-limits">
+                    每页
+                    <select id="pageSize" lay-ignore @change="getstudent(1)">
+                        <option>5</option>
+                        <option>10</option>
+                        <option>15</option>
+                    </select>
+                    条
+                </span>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+</div>
+
+<!--自定义脚本-->
+<script src="/js/vue.js"></script>
+<script src="/js/jquery.min.js"></script>
+<script src="/lay/modules/layer.js"></script>
+<!--<script src="bootstrap.min.js"></script>-->
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            list: '',
+            isActive: false,
+            isActive2: false,
+        },
+        mounted: function () {
+            this.getmodel();
+        },
+        methods: {
+            getmodel: function (page) {
+                if (page <= 0 || (page - $("#maxPage").val()) > 0) {
+                    layer.msg("该输多少页心里没点b数吗?", {
+                        time: 1500
+                    })
+                    return;
+                }
+
+                layer.load(1, {
+                    shade: false
+                });
+                $.ajax({
+                    url: "/auth/permissionlist",
+                    data: {
+                        /*age: $("#age").val(),
+                        name: $("#name").val(),*/
+                        page: page == null ? "" : page,
+                        pageSize: $("#pageSize").val()
+                    },
+                    success: function (data) {
+                        data.max == 0 ? $("#myPage").css("display", "none") : $("#myPage").css("display", "")
+                        vm.list = data;
+                        vm.isActive = data.page == 1 ? true : false
+                        vm.isActive2 = data.page == data.maxPage ? true : false
+                        layer.closeAll();
+                    }
+                })
+
+            },
+            fly: function () {
+                this.getmodel($("#fly").val())
+            },
+            add:function () {
+                layer.open({
+                    type: 2,
+                    title: '修改承租方',
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area : ['85%' , '85%'],
+                    content: '666',
+                });
+            },
+            search:function (id) {
+                if (window.localStorage) {
+                    //存储变量的值
+                    localStorage.id = id;
+                } else {
+                    alert("NOT SUPPORT");
+                }
+                layer.open({
+                    type: 2,
+                    title: '查看详情',
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area : ['85%' , '85%'],
+                    content: 'xiangqing.html',
+                });
+            },
+            update:function (id,nr,np) {
+                if (window.localStorage) {
+                    //存储变量的值
+                    localStorage.id = id;
+                    localStorage.nr = nr;
+                    localStorage.np = np;
+
+                } else {
+                    alert("NOT SUPPORT");
+                }
+                layer.open({
+                    type: 2,
+                    title: '查看详情',
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area : ['85%' , '85%'],
+                    content: 'update.html',
+                    closeBtn: 1,
+                    end:function () {
+                       vm.getmodel(1)
+                    }
+                });
+            },
+
+        }
+    });
+</script>

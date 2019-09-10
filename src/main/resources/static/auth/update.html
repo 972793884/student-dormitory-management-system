@@ -1,0 +1,171 @@
+<link rel="stylesheet" href="/css/layui.css">
+<div xmlns="" xmlns:v-bind="http://www.w3.org/1999/xhtml" id="app">
+
+
+    <!--表格-->
+    <fieldset class="layui-elem-field">
+        <legend>查询结果</legend>
+        <div class="layui-field-box">
+            <table class="layui-table" lay-even="" lay-skin="nob">
+                <tr>
+                    <td style="width: 5%;text-align: center">
+                        <label class="layui-form-label">资源名称:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" :value="list.list[2][0].name" lay-verify="email" autocomplete="off" class="layui-input">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: center">
+                        <label class="layui-form-label">资源url:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" :value="list.list[2][0].url" lay-verify="email" autocomplete="off" class="layui-input">
+                        </div>
+                    </td>
+                    <td style="width: 10%;text-align: center">
+                        <a href="javascript:void (0)" @click=""
+                           class="layui-btn layui-btn-normal layui-btn-sm">修改</a>
+                    </td>
+                </tr>
+            </table>
+            <table class="layui-table" lay-even="" lay-skin="nob">
+
+                <thead>
+                <tr>
+                    <th style="width: 5%;text-align: center">序号</th>
+                    <th style="width: 10%;text-align: center">名称</th>
+                    <th style="width: 10%;text-align: center">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><h3>绑定角色</h3></td>
+                    <td></td>
+                    <td style="width: 5%;text-align: center"><a href="javascript:void (0)"
+                                                                class="layui-btn layui-btn-normal layui-btn-sm"
+                                                                lay-even="addRole" @click="addRole()">添加角色绑定</a>
+                        <a id="nr" href="javascript:void (0)" @click="updateNr()"
+                           class="layui-btn layui-btn-normal layui-btn-sm">{{nr}}</a>
+                    </td>
+                </tr>
+                <tr v-for="(item,index) in list.list[0]">
+                    <td style="width: 5%;text-align: center">{{index+1}}</td>
+                    <td style="width: 10%;text-align: center">{{item.name}}</td>
+                    <td style="width: 10%;text-align: center">
+                        <!--<a href="javascript:void (0)" class="layui-btn layui-btn-normal layui-btn-sm" lay-even="update" @click="update(item.id)">修改</a>-->
+                        <a href="javascript:void (0)" class="layui-btn layui-btn-danger layui-btn-sm"
+                           lay-even="del">删除</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><h3>绑定资源</h3></td>
+                    <td></td>
+                    <td style="width: 5%;text-align: center">
+                        <a href="javascript:void (0)" class="layui-btn layui-btn-normal layui-btn-sm" @click="addPer()">添加资源绑定</a>
+                        <a id="np" href="javascript:void (0)" class="layui-btn layui-btn-normal layui-btn-sm">{{np}}</a>
+                    </td>
+                </tr>
+                <tr v-for="(item,index) in list.list[1]">
+                    <td style="width: 5%;text-align: center">{{index+1}}</td>
+                    <td style="width: 10%;text-align: center">{{item.name}}</td>
+                    <td style="width: 10%;text-align: center">
+                        <!--<a href="javascript:void (0)" class="layui-btn layui-btn-normal layui-btn-sm" lay-even="update" @click="update(item.id)">修改</a>-->
+                        <a href="javascript:void (0)" class="layui-btn layui-btn-danger layui-btn-sm"
+                           lay-even="del">删除</a>
+                    </td>
+                </tr>
+                <!-- <tr v-if="list.max==0">
+                     <td colspan="5" style="text-align: center"><h3 style="margin-top: 5px">搜索无结果</h3></td>
+                 </tr>-->
+                </tbody>
+            </table>
+        </div>
+
+
+    </fieldset>
+
+</div>
+
+<!--自定义脚本-->
+<script src="/js/vue.js"></script>
+<script src="/js/jquery.min.js"></script>
+<script src="/lay/modules/layer.js"></script>
+<!--<script src="bootstrap.min.js"></script>-->
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            list: '',
+            nr: "",
+            np: "",
+            id: ""
+        },
+        mounted: function () {
+            this.getmodel();
+        },
+        methods: {
+            getmodel: function (page) {
+                this.id = localStorage["id"]
+                this.nr = localStorage["nr"] == 1 ? "需要所有角色" : "不需要所有角色"
+                this.np = localStorage["np"] == 1 ? "需要所有资源" : "不需要所有资源"
+                layer.load(1, {
+                    shade: false
+                });
+                $.ajax({
+                    url: "/auth/getPermissionsAndRoles",
+                    data: {
+                        id: this.id
+                    },
+                    success: function (data) {
+                        vm.list = data;
+                        layer.closeAll();
+                    }
+                })
+
+            },
+            fly: function () {
+                this.getmodel()
+            },
+            addRole: function () {
+                if (window.localStorage) {
+                    //存储变量的值
+                    localStorage.id = this.id;
+                } else {
+                    alert("NOT SUPPORT");
+                }
+                layer.open({
+                    type: 2,
+                    title: '修改',
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area: ['85%', '85%'],
+                    content: 'roleList.html',
+                });
+            },
+            addPer: function () {
+                layer.open({
+                    type: 2,
+                    title: '修改',
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area: ['85%', '85%'],
+                    content: 'perList.html',
+                });
+            },
+            updateNr: function () {
+                var flag = this.nr.match("不") ? 1 : 0
+                $.ajax({
+                    url: "/auth/updateNr",
+                    data: {
+                        id: this.id,
+                        needallroles: flag
+                    },
+                    success: function (data) {
+                        if (data.state == "ok") {
+                            vm.nr = flag == 1 ? "需要所有角色" : "不需要所有角色"
+                        }
+                    }
+                });
+            }
+
+        }
+    });
+</script>

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>历史订单</title>
+    <link rel="stylesheet" href="./vendor/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="./vendor/font-awesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body class="sidebar-fixed header-fixed">
+<div class="page-wrapper">
+    <div class="page-header">
+        <nav class="navbar page-header">
+            <a href="#" class="btn btn-link sidebar-mobile-toggle d-md-none mr-auto">
+                <i class="fa fa-bars"></i>
+            </a>
+            <a href="#" class="btn btn-link sidebar-toggle d-md-down-none">
+                <i class="fa fa-bars"></i>
+            </a>
+
+        </nav>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav">
+                    <li class="nav-title">导航</li>
+
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link active">
+                            <i class="icon icon-speedometer"></i> 主页
+                        </a>
+                    </li>
+
+                    <li class="nav-item nav-dropdown">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-graph"></i> 卫生评分 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a href="myDormitory.html" class="nav-link">
+                                    <i class="icon icon-graph"></i> 我的宿舍
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="myMajor.html" class="nav-link">
+                                    <i class="icon icon-graph"></i> 我们专业
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item nav-dropdown open">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-energy"></i> 公物报修 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a href="initiateRepair.html" class="nav-link">
+                                    <i class="icon icon-energy"></i> 发起报修
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="handling.html" class="nav-link">
+                                    <i class="icon icon-energy"></i> 处理中
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="evaluate.html" class="nav-link">
+                                    <i class="icon icon-energy"></i> 待评价
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="history.html" class="nav-link">
+                                    <i class="icon icon-energy"></i> 已完成
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item nav-dropdown">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-target"></i> 我的 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a href="settings.html" class="nav-link">
+                                    <i class="icon icon-target"></i> 个人资料
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#"  onclick="location.href='/logout'" class="nav-link">
+                            <i class="icon icon-puzzle"></i> 退出登录
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="content" id="app">
+            <h1>历史订单</h1>
+            <div class="col-md-4" id="1" v-for="item in list">
+                <div class="card text-white border-0">
+                    <div class="card-header bg-success">
+                        {{item.name}}
+                    </div>
+
+                    <div class="card-body bg-success">
+                        <p>{{item.content}}</p>
+                        <p>{{item.repairTime}}</p>
+                        <button class="btn btn-danger btn-block" data-toggle="modal" @click="saveId(item.id)"
+                                data-target="#modal-1" style="width: 100px;margin-left: 50%">删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!--  <div class="col-md-4" id="2">
+                  <div class="card text-white border-0">
+                      <div class="card-header bg-success">
+                          窗户坏了
+                      </div>
+
+                      <div class="card-body bg-success">
+                          <p>窗户的锁可能生锈了，拧不动，请尽快派遣师傅修理</p>
+                          <p>2019/5/5</p>
+                          <button class="btn btn-danger btn-block" data-toggle="modal"
+                                  data-target="#modal-1" style="width: 100px;margin-left: 50%">删除</button>
+                      </div>
+                  </div>
+              </div>-->
+        </div>
+    </div>
+</div>
+<!--删除时弹出模态框-->
+<div class="modal fade" id="modal-1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">提示</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                是否确认删除该订单记录？
+            </div>
+
+            <div class="modal-footer">
+                <button id="dismiss" type="button" class="btn btn-link" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="vm.delete()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="./vendor/jquery/jquery.min.js"></script>
+<script src="./vendor/popper.js/popper.min.js"></script>
+<script src="./vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="./vendor/chart.js/chart.min.js"></script>
+<script src="./js/carbon.js"></script>
+<script src="./js/demo.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/jquery-form.js"></script>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            list: '',
+            id: ""
+        },
+        mounted: function () {
+            this.getmodel();
+        },
+        methods: {
+            getmodel: function (page) {
+                $.ajax({
+                    url: "/repairs/getHistoryRepairs",
+                    type: "GET",
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        vm.list = data
+                    }
+                });
+            },
+            saveId: function (id) {
+                this.id = id
+            },
+            delete: function () {
+                $.ajax({
+                    url: "/repairs/delRepairs",
+                    type: "GET",
+                    data: {id:vm.id},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.state == 'ok') {
+                            $("#dismiss").click()
+                            layer.msg("删除成功!")
+                            vm.getmodel()
+                        } else {
+                            layer.msg("删除失败!")
+                        }
+                    }
+                });
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

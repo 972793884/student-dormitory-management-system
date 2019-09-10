@@ -1,0 +1,114 @@
+<link rel="stylesheet" href="../vendor/simple-line-icons/css/simple-line-icons.css">
+<link rel="stylesheet" href="../vendor/font-awesome/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="css/validationEngine.jquery.css">
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">编辑通知</h5>
+    </div>
+
+    <div class="modal-body" id="app">
+        <form id="adviceForm" action="/advice/saveAdvice" method="post">
+            <div class="card-body py-7">
+                <div class="form-group" style="width: 400px">
+                    <input name="id" :value="advice.id" type="hidden">
+                    <label class="form-control-label">标题</label>
+                    <input name="title" type="text" class="form-control validate[required]" :value="advice.title">
+                </div>
+                <div class="form-group" style="width: 400px">
+                    <label class="form-control-label">内容</label>
+                    <textarea name="content" type="text" class="form-control validate[required]" rows="15"
+                              :value="advice.content"></textarea>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" style="float: left" onclick="save()" class="btn btn-primary">确认</button>
+    </div>
+</div>
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.validationEngine.js"></script>
+<script src="js/jquery.validationEngine-zh_CN.js"></script>
+<script src="js/jquery-form.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/vue.js"></script>
+<script>
+    $(function () {
+        $("#adviceForm").validationEngine('attach', {
+            relative: true,
+            scroll: true,
+            custom_error_messages: {
+                required: {
+                    message: '这里不能是空的'
+                },
+            },
+            ajaxFormValidation: true,
+            overflownDIV: "#divPostion",
+            promptPosition: "bottomRight" //验证弹出框的位置，topRight,topLeft,bottomRight,bottomLeft,centerRight,centerLeft,inline
+        });
+    })
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            advice: ''
+        },
+        mounted: function () {
+            this.getmodel();
+        },
+        methods: {
+            getmodel: function (data) {
+                if (parent.vm.id!=-1){
+                    $.ajax({
+                        url: "/advice/getAdviceById",
+                        type: "GET",
+                        data: {id:parent.vm.id},
+                        dataType: "json",
+                        success: function (data) {
+                            vm.advice=data.advice
+                        }
+                    });
+                }
+
+            }
+        }
+    });
+
+    function save() {
+        var state = $("#adviceForm").validationEngine('validate');
+        if (!state) {
+            return;
+        }
+
+        $("#adviceForm").ajaxSubmit({
+            dataType: "json",
+            async: false,
+            beforeSubmit: function (formData, jqForm, options) {
+                tipIndex = parent.layer.load(1, {
+                    shade: 0.01
+                });
+            },
+            success: function (ret) {
+                if (ret.state == "ok") {
+                    parent.layer.closeAll()
+                    parent.vm.getmodel()
+                    parent.layer.msg("保存成功!", {
+                        time: 3000,
+                    })
+
+                } else {
+                    layer.msg('保存失败!', {
+                        time: 3000,
+                    })
+                }
+
+            },
+            complete: function (ret) {
+                parent.layer.close(tipIndex);
+            }
+        })
+
+
+    }
+</script>

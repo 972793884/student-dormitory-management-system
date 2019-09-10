@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2 id="msg" style="color: red"></h2>
+<form action="/doLogin" method="post">
+    账号: <input id="name" type="text" name="name">
+    密码: <input id="pwd" type="password" name="password">
+    <button type="button" onclick="sub()">登录</button>
+</form>
+<button type="button" onclick="ff()">验证</button>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script>
+    var sessionid = ""
+    function sub() {
+
+        $.ajax({
+            url: "/doLogin",
+            data: {
+                'name': $("#name").val(),
+                'password': $("#pwd").val()
+            },
+            success: function (data) {
+                sessionid=data.token
+                $("#msg").html(data.msg)
+                if (data.state=="ok") {
+                    window.location.href="/index/upload.html"
+
+                }
+            }
+        })
+    }
+ /*   function ff() {
+        $.ajax({
+            url:"/student/upload.html;jsessionid="+sessionid,
+            data:{
+
+            },
+            success:function(data){
+                alert(data)
+            }
+        })
+    }*/
+</script>
+</body>
+</html>

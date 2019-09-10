@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    <form action="/student/upload" enctype="multipart/form-data" method="post">
+        <input type="file" name="myFile">
+        <button type="submit">提交</button>
+    </form>
+    <br>
+    <button onclick="window.location.href='/logout'">退出</button>
+    <button onclick="window.location.href='/student/add'">add</button>
+    <button onclick="window.location.href='/student/view'">view</button>
+    <button onclick="window.location.href='/student/package'">package</button>
+    <button onclick="window.location.href='/index/index.html'">首页</button>
+    <form action="/student/package" method="post">
+        <button type="submit">提交</button>
+    </form>
+    <br>
+    <form action="" method="post">
+        <table border="1px">
+            <tr>
+                <th>序号</th>
+                <th>资源名称</th>
+                <th>url</th>
+                <!--<th>资源</th>-->
+                <th>是否需要所有资源</th>
+                <!--<th>角色</th>-->
+                <th>是否需要所有角色</th>
+                <th>操作</th>
+            </tr>
+            <tr v-for="item in list">
+                <td>{{item.id}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.url}}</td>
+                <!--<td>{{item.id}}</td>-->
+                <td style="text-align: center">{{item.needallprems==1?"是":"否"}}</td>
+                <!--<td>{{item.id}}</td>-->
+                <td style="text-align: center">{{item.needallroles==1?"是":"否"}}</td>
+                <td><a id="888"  title="666" href="javaScript:;" @click="showInfo(item.id,$event)">查看</a></td>
+            </tr>
+        </table>
+        <button type="submit">提交</button>
+    </form>
+</div>
+</body>
+<script src="/js/vue.js"></script>
+<script src="/js/jquery.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            list: '',
+        },
+        mounted: function () {
+            this.getlist();
+        },
+        methods: {
+            getlist: function () {
+                $.ajax({
+                    url: "/auth/permissionlist",
+                    data: {},
+                    success: function (data) {
+                        vm.list = data;
+                    }
+                })
+            },
+            showInfo:function (id,obj) {
+                var $this =$(obj.currentTarget)
+                alert($this.attr("title"))
+                var str="<tr><td>资源:</td></tr><tr><td>角色:</td></tr>"
+                $this.parent().parent().after(str)
+                var result=this.getAuth(id)
+            },
+            getAuth:function (id) {
+                $.ajax({
+                    url: "/auth/getAuthById",
+                    data: {
+                        id:id
+                    },
+                    success: function (data) {
+                       return data
+                    }
+                })
+            }
+        }
+    });
+</script>
+</html>

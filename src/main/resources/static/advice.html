@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>入住情况</title>
+    <!-- <link rel="stylesheet" href="css/bootstrap.css">-->
+    <link rel="stylesheet" href="../vendor/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="../vendor/font-awesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="css/validationEngine.jquery.css">
+
+    <style type="text/css">
+        .selector-input {
+            width: 150px;
+            margin-left: 10px;
+        }
+
+        .pagination > .active > a {
+            z-index: 2;
+            color: #fff;
+            cursor: default;
+            background-color: #337ab7;
+            border-color: #337ab7;
+        }
+
+        .pagination > .disabled > a {
+            color: #777;
+            cursor: not-allowed;
+            background-color: #fff;
+            border-color: #ddd;
+        }
+
+        .pagination > li > a {
+            position: relative;
+            float: left;
+            padding: 6px 12px;
+            margin-left: -1px;
+            line-height: 1.42857143;
+            color: #337ab7;
+            text-decoration: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body class="sidebar-fixed header-fixed">
+<div class="page-wrapper">
+    <div class="page-header">
+        <nav class="navbar page-header">
+            <a href="#" class="btn btn-link sidebar-mobile-toggle d-md-none mr-auto">
+                <i class="fa fa-bars"></i>
+            </a>
+            <a href="#" class="btn btn-link sidebar-toggle d-md-down-none">
+                <i class="fa fa-bars"></i>
+            </a>
+
+        </nav>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav">
+                    <li class="nav-title">导航</li>
+                    <li class="nav-item nav-dropdown open">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-graph"></i> 入住情况 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a href="room.html" class="nav-link">
+                                    <i class="icon icon-graph"></i> 宿舍管理
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="advice.html" class="nav-link">
+                            <i class="icon icon-puzzle"></i> 公告管理
+                        </a>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-target"></i> 我的 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a href="settings_teacher.html" class="nav-link">
+                                    <i class="icon icon-target"></i> 个人资料
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" onclick="location.href='/logout'" class="nav-link">
+                            <i class="icon icon-puzzle"></i> 退出登录
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="content">
+            <h1>公告管理</h1>
+            <!--条件筛选-->
+            <div class="row mt-4" id="filterForm">
+                <div class="selector-input">
+                    <label for="buildingNum">标题</label>
+                    <div class="input-group" style="width: 150px">
+                        <input type="text" i operator="match" name="title" class="form-control"
+                               placeholder="标题">
+                    </div>
+                </div>
+
+                <div class="selector-input">
+                    <label for="roomNum"> 内容</label>
+                    <div class="input-group" style="width: 150px">
+                        <input type="number"  operator="match" name="content" class="form-control"
+                               placeholder="内容">
+                    </div>
+                </div>
+
+                <div class="selector-input">
+                    <label for="studentId">创建人</label>
+                    <div class="input-group" style="width: 150px">
+                        <input type="text"  operator="==" name="createUser" class="form-control"
+                               placeholder="创建人">
+                    </div>
+                </div>
+
+                <div class="selector-input">
+                    <label>&nbsp;</label>
+                    <div class="input-group" style="width: 150px">
+                        <button onclick="searchData(7,1,5)" type="button" class="btn btn-primary"><i
+                                class="fa fa-search"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+                <div class="selector-input">
+                    <label>&nbsp;</label>
+                    <div class="input-group" style="width: 150px">
+                        <button onclick="vm.updateUser('-1')" type="button" class="btn btn-primary"><i
+                                class="fa fa-edit"></i>添加
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body" id="app">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>标题</th>
+                            <th>内容</th>
+                            <th>创建人</th>
+                            <th>创建时间</th>
+                            <th>更新时间</th>
+                            <th colspan="1">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="item in list">
+                            <td>{{item.title}}</td>
+                            <td>{{item.content}}</td>
+                            <td>{{item.createUserName}}</td>
+                            <td>{{item.createTime}}</td>
+                            <td>{{item.updateTime}}</td>
+                            <td>
+                                <button class="btn btn-primary btn-block"  style="width: 100px;float: left;margin-right: 5px" @click="updateUser(item.id)"
+                                       >修改
+                                </button>
+                                <button class="btn btn-danger btn-block"  style="width: 100px;margin-top: 0px;" @click="del(item.id)"
+                                       >删除
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div id="pagination" style="text-align: center;margin-top: 50px">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--修改时弹出模态框-->
+
+<script src="../vendor/jquery/jquery.min.js"></script>
+<script src="../vendor/popper.js/popper.min.js"></script>
+<script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="../vendor/chart.js/chart.min.js"></script>
+<script src="../js/carbon.js"></script>
+<script src="../js/demo.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/page.js"></script>
+<script src="js/jquery-form.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/jquery.validationEngine.js"></script>
+<script src="js/jquery.validationEngine-zh_CN.js"></script>
+<script type="text/javascript" src="js/jqPaginator.js"></script>
+<script>
+    $(function () {
+
+    })
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            list: '',
+            data: '',
+            isChange:false,
+            id:''
+        },
+        mounted: function () {
+            this.getmodel();
+        },
+        methods: {
+            getmodel: function (page) {
+                $.ajax({
+                    url: "/advice/getAdviceList",
+                    type: "GET",
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        vm.data = data.advicelist
+                        build(vm.data, 7, 5)
+                    }
+                });
+
+            },
+            updateUser:function (id) {
+                this.id=id
+                layer.open({
+                    type: 2,
+                    title: '修改信息',
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area: ['80%', '80%'],
+                    content: 'advice_update.html'
+                });
+
+            },
+            del:function (id) {
+                layer.confirm("确定删除该通知吗?", {
+                    btn: ['确定', '取消'] //按钮
+                }, function () {
+                    $.ajax({
+                        url: "/advice/delAdvice",
+                        type: "get",
+                        data: {
+                            id: id,
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.state == 'ok') {
+                                layer.msg('删除成功!', {icon: 6});
+                                vm.getmodel()
+                            } else {
+                                layer.msg('删除失败!', {icon: 9});
+                            }
+                        }
+                    });
+                }, function () {
+                    layer.msg('取消删除', {icon: 9});
+                });
+            }
+
+        }
+    });
+
+</script>
+</body>
+</html>

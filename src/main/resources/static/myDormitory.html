@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>我的宿舍</title>
+    <link rel="stylesheet" href="./vendor/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="./vendor/font-awesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+<div class="page-wrapper">
+    <nav class="navbar page-header">
+        <a href="#" class="btn btn-link sidebar-mobile-toggle d-md-none mr-auto">
+            <i class="fa fa-bars"></i>
+        </a>
+        <a href="#" class="btn btn-link sidebar-toggle d-md-down-none">
+            <i class="fa fa-bars"></i>
+        </a>
+
+    </nav>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav">
+                    <li class="nav-title">导航</li>
+
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link active">
+                            <i class="icon icon-speedometer"></i> 主页
+                        </a>
+                    </li>
+
+                    <li class="nav-item nav-dropdown open">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-graph"></i> 卫生评分 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a href="myDormitory.html" class="nav-link">
+                                    <i class="icon icon-graph"></i> 我的宿舍
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="myMajor.html" class="nav-link">
+                                    <i class="icon icon-graph"></i> 我们专业
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item nav-dropdown">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-energy"></i> 公物报修 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a href="initiateRepair.html" class="nav-link">
+                                    <i class="icon icon-energy"></i> 发起报修
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="handling.html" class="nav-link">
+                                    <i class="icon icon-energy"></i> 处理中
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="evaluate.html" class="nav-link">
+                                    <i class="icon icon-energy"></i> 待评价
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="history.html" class="nav-link">
+                                    <i class="icon icon-energy"></i> 已完成
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item nav-dropdown">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            <i class="icon icon-target"></i> 我的 <i class="fa fa-caret-left"></i>
+                        </a>
+
+                        <ul class="nav-dropdown-items">
+                            <li class="nav-item">
+                                <a href="settings.html" class="nav-link">
+                                    <i class="icon icon-target"></i> 个人资料
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" onclick="location.href='/logout'" class="nav-link">
+                            <i class="icon icon-puzzle"></i> 退出登录
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="content" id="app">
+            <div id="main" style="width: 50%;height:50%;"></div>
+        </div>
+    </div>
+</div>
+<script src="./js/echarts.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/vue.js"></script>
+
+<script>
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            list: ''
+        },
+        mounted: function () {
+            this.getmodel();
+        },
+        methods: {
+            getmodel: function (page) {
+
+                $.ajax({
+                    url: "/grade/getLastWeekGrade",
+                    type: "GET",
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                       vm.list=data
+                        init()
+                    }
+                });
+            }
+        }
+    });
+
+
+    function init() {
+        let myChart = echarts.init(document.getElementById('main'));
+        let option = {
+            title: {
+                text: '最近一周的卫生评分',
+                subtext: '模拟数据'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: [/*'最高分数',*/ '我的分数']
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: {show: false},
+                    dataView: {show: true, readOnly: false},
+                    magicType: {show: true, type: ['line', 'bar']},
+                    restore: {show: false},
+                    saveAsImage: {show: true}
+                }
+            },
+            calculable: true,
+            xAxis: [
+                {
+                    type: 'category',
+                    name: '时间',
+                    boundaryGap: false,
+                    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '分数',
+                    min: 0,
+                    max: 100,
+                    interval: 20,
+                    axisLabel: {
+                        formatter: '{value}分'
+                    },
+                }
+            ],
+            series: [
+               /* {
+                    name: '最高分数',
+                    type: 'line',
+                    data: [90, 95, 87, 93, 100, 98, 89],
+                    markPoint: {
+                        data: [
+                            {type: 'max', name: '最大值'},
+                            {type: 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine: {
+                        data: [
+                            {type: 'average', name: '平均值'}
+                        ]
+                    }
+                },*/
+                {
+                    name: '我的分数',
+                    type: 'line',
+                    data: vm.list,
+                    markPoint: {
+                        data: [
+                            {type: 'max', name: '最大值'},
+                            {type: 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine: {
+                        data: [
+                            {type: 'average', name: '平均值'}
+                        ]
+                    }
+                }
+            ]
+        };
+        myChart.setOption(option);
+    }
+
+</script>
+<script src="./vendor/jquery/jquery.min.js"></script>
+<script src="./vendor/popper.js/popper.min.js"></script>
+<script src="./vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="./vendor/chart.js/chart.min.js"></script>
+<script src="./js/carbon.js"></script>
+<script src="./js/demo.js"></script>
+</body>
+</html>

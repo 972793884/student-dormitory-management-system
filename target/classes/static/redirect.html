@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script src="js/jquery.min.js"></script>
+<script>
+    $(function () {
+        $.ajax({
+            url: "/user/getUser",
+            type: "GET",
+            data: {},
+            dataType: "json",
+            success: function (data) {
+                if (data.duty == '1') {
+                    location.href='/index.html'
+                }
+                if (data.duty == '2') {
+                    location.href='/room.html'
+                }
+                if (data.duty == '3') {
+                    location.href='/initiateGrade.html'
+                }
+                if (data.duty=='0') {
+                    location.href='/user.html'
+                }
+
+            }
+        });
+    })
+
+</script>
+</html>

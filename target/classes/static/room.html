@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>入住情况</title>
+    <!-- <link rel="stylesheet" href="css/bootstrap.css">-->
+    <link rel="stylesheet" href="../vendor/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="../vendor/font-awesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="css/validationEngine.jquery.css">
+
+    <style type="text/css">
+        .selector-input {
+            width: 150px;
+            margin-left: 10px;
+        }
+
+        .pagination > .active > a {
+            z-index: 2;
+            color: #fff;
+            cursor: default;
+            background-color: #337ab7;
+            border-color: #337ab7;
+        }
+
+        .pagination > .disabled > a {
+            color: #777;
+            cursor: not-allowed;
+            background-color: #fff;
+            border-color: #ddd;
+        }
+
+        .pagination > li > a {
+            position: relative;
+            float: left;
+            padding: 6px 12px;
+            margin-left: -1px;
+            line-height: 1.42857143;
+            color: #337ab7;
+            text-decoration: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body class="sidebar-fixed header-fixed">
+<div id="app">
+    <div class="page-wrapper">
+        <div class="page-header">
+            <nav class="navbar page-header">
+                <a href="#" class="btn btn-link sidebar-mobile-toggle d-md-none mr-auto">
+                    <i class="fa fa-bars"></i>
+                </a>
+                <a href="#" class="btn btn-link sidebar-toggle d-md-down-none">
+                    <i class="fa fa-bars"></i>
+                </a>
+
+
+            </nav>
+        </div>
+
+        <div class="main-container">
+            <div class="sidebar">
+                <nav class="sidebar-nav">
+                    <ul class="nav">
+                        <li class="nav-title">导航</li>
+                        <li class="nav-item nav-dropdown open">
+                            <a href="#" class="nav-link nav-dropdown-toggle">
+                                <i class="icon icon-graph"></i> 入住情况 <i class="fa fa-caret-left"></i>
+                            </a>
+
+                            <ul class="nav-dropdown-items">
+                                <li class="nav-item">
+                                    <a href="room.html" class="nav-link">
+                                        <i class="icon icon-graph"></i> 宿舍管理
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="advice.html" class="nav-link">
+                                <i class="icon icon-puzzle"></i> 公告管理
+                            </a>
+                        </li>
+                        <li class="nav-item nav-dropdown">
+                            <a href="#" class="nav-link nav-dropdown-toggle">
+                                <i class="icon icon-target"></i> 我的 <i class="fa fa-caret-left"></i>
+                            </a>
+
+                            <ul class="nav-dropdown-items">
+                                <li class="nav-item">
+                                    <a href="settings_teacher.html" class="nav-link">
+                                        <i class="icon icon-target"></i> 个人资料
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="#" onclick="location.href='/logout'" class="nav-link">
+                                <i class="icon icon-puzzle"></i> 退出登录
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="content">
+                <h1>宿舍调整</h1>
+                <!--条件筛选-->
+                <div class="row mt-4" id="filterForm">
+                    <div class="selector-input">
+                        <label for="buildingNum">楼号</label>
+                        <div class="input-group" style="width: 150px">
+                            <input type="number" id="buildingNo" operator="==" name="buildingNo" class="form-control"
+                                   placeholder="楼号">
+                        </div>
+                    </div>
+
+                    <div class="selector-input">
+                        <label for="roomNum">宿舍号</label>
+                        <div class="input-group" style="width: 150px">
+                            <input type="number" id="roomNo" operator="==" name="roomNo" class="form-control"
+                                   placeholder="宿舍号">
+                        </div>
+                    </div>
+
+                    <div class="selector-input">
+                        <label for="studentId">学号</label>
+                        <div class="input-group" style="width: 150px">
+                            <input type="number" id="studentId" name="studentNumber" operator="==" class="form-control"
+                                   placeholder="学号">
+                        </div>
+                    </div>
+
+                    <div class="selector-input">
+                        <label>&nbsp;</label>
+                        <div class="input-group" style="width: 150px">
+                            <button onclick="searchData(7,1,5)" type="button" class="btn btn-primary"><i
+                                    class="fa fa-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body" id="">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>学号</th>
+                                <th>姓名</th>
+                                <th>楼号</th>
+                                <th>房间号</th>
+                                <th>床位</th>
+                                <th colspan="2">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="item in list">
+                                <td>{{item.studentNumber}}</td>
+                                <td class="text-nowrap">{{item.name}}</td>
+                                <td>{{item.buildingNo}}</td>
+                                <td>{{item.roomNo}}</td>
+                                <td>{{item.bedNo}}</td>
+                                <td style="width: 100px;">
+                                    <button v-if="item.bedNo==null" class="btn btn-primary btn-block"
+                                            data-toggle="modal"
+                                            data-target="#modal-1" style="width: 100px;"
+                                            @click="setStudent(item.studentNumber,item.name,'false')">分配
+                                    </button>
+                                    <button v-if="item.bedNo!=null" class="btn btn-primary btn-block"
+                                            data-toggle="modal"
+                                            data-target="#modal-1" style="width: 100px;"
+                                            @click="setStudent(item.studentNumber,item.name,'true')">更换
+                                    </button>
+                                </td>
+                                <td style="width: 100px;">
+                                    <button class="btn btn-danger btn-block" @click="back(item.bedId)"
+                                            style="width: 100px;">撤出
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div id="pagination" style="text-align: center;margin-top: 50px">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--修改时弹出模态框-->
+    <div class="modal fade" id="modal-1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">修改入住信息</h5>
+                    <button id="close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="bedForm" action="/bed/saveBed" method="post">
+                        <div class="card-body py-5">
+                            <div class="form-group" style="width: 300px">
+                                <label class="form-control-label">学号</label>
+                                <input id="stuNo" name="studentNo" type="number" class="form-control"
+                                       readonly="readonly"
+                                       value="">
+                            </div>
+
+                            <div class="form-group" style="width: 300px">
+                                <label class="form-control-label">姓名</label>
+                                <input id="stuName" type="text" class="form-control" readonly="readonly" value="">
+                            </div>
+                            <div class="form-group" style="width: 300px">
+                                <label class="form-control-label">楼号</label>
+                                <select class="form-control validate[required]" id="building" name="buildingNo" onchange="vm.getRoom(this.value)">
+                                    <option value="">选择楼号</option>
+                                    <option v-for="item in building" :value="item">{{item}}号楼</option>
+                                </select>
+                                <!--<input name="buildingNo" type="number" class="form-control validate[required]">-->
+                            </div>
+
+                            <div class="form-group" style="width: 300px">
+                                <label class="form-control-label">宿舍号</label>
+                                <select class="form-control validate[required]" name="roomNo" onchange="vm.getBed(this.value,building.value)">
+                                    <option value="">选择宿舍</option>
+                                    <option v-for="item in room" :value="item">{{item}}</option>
+                                </select>
+                                <!--<input name="roomNo" type="number" class="form-control validate[required]">-->
+                            </div>
+                            <div class="form-group" style="width: 300px">
+                                <label class="form-control-label">床位号</label>
+                                <select class="form-control validate[required]" name="bedNo">
+                                    <option value="">选择床位</option>
+                                    <option v-for="item in bed" :value="item">{{item}}</option>
+                                </select>
+                                <!--<input name="bedNo" type="number" class="form-control validate[required]">-->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-dismiss="modal">取消</button>
+                    <button type="button" onclick="vm.save()" class="btn btn-primary">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../vendor/jquery/jquery.min.js"></script>
+<script src="../vendor/popper.js/popper.min.js"></script>
+<script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="../vendor/chart.js/chart.min.js"></script>
+<script src="../js/carbon.js"></script>
+<script src="../js/demo.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/page.js"></script>
+<script src="js/jquery-form.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/jquery.validationEngine.js"></script>
+<script src="js/jquery.validationEngine-zh_CN.js"></script>
+<script type="text/javascript" src="js/jqPaginator.js"></script>
+<script>
+    $(function () {
+        $("#bedForm").validationEngine('attach', {
+            relative: true,
+            scroll: true,
+            custom_error_messages: {
+                required: {
+                    message: '这里不能是空的'
+                },
+            },
+            ajaxFormValidation: true,
+            overflownDIV: "#divPostion",
+            promptPosition: "bottomRight" //验证弹出框的位置，topRight,topLeft,bottomRight,bottomLeft,centerRight,centerLeft,inline
+        });
+    })
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            list: '',
+            data: '',
+            isChange: false,
+            building: '',
+            room: '',
+            bed: ''
+        },
+        mounted: function () {
+            this.getmodel();
+        },
+        methods: {
+            getmodel: function (page) {
+                $.ajax({
+                    url: "/student/getStudentAndBedList",
+                    type: "GET",
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        vm.data = data
+                        build(vm.data, 7, 5)
+                    }
+                });
+                this.getBuilding()
+            },
+            setStudent: function (stuNum, stuName, isChange) {
+                $("#stuNo").val(stuNum);
+                $("#stuName").val(stuName);
+                this.isChange = isChange;
+            },
+            save: function () {
+                var state = $("#bedForm").validationEngine('validate');
+                if (!state) {
+                    return;
+                }
+                $("#bedForm").ajaxSubmit({
+                    dataType: "json",
+                    async: false,
+                    data: {
+                        isChange: vm.isChange
+                    },
+                    beforeSubmit: function (formData, jqForm, options) {
+                        tipIndex = parent.layer.load(1, {
+                            shade: 0.01
+                        });
+                    },
+                    success: function (ret) {
+                        if (ret.state == "ok") {
+                            $("#close").click()
+                            parent.layer.msg("保存成功!", {
+                                time: 3000,
+                            })
+                            vm.getmodel()
+                        } else {
+                            layer.msg("保存失败!", {
+                                time: 3000,
+                            })
+                        }
+
+                    },
+                    complete: function (ret) {
+                        parent.layer.close(tipIndex);
+                    }
+                })
+
+
+            },
+            back: function (id) {
+                layer.confirm('确定撤回该床位吗？', {
+                    btn: ['确定', '取消'] //按钮
+                }, function () {
+                    $.ajax({
+                        url: "/bed/backBed",
+                        type: "get",
+                        data: {
+                            id: id,
+                            status: 0
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.state == 'ok') {
+                                layer.msg('撤回成功!', {icon: 6});
+                                vm.getmodel()
+                            } else {
+                                layer.msg('撤回失败!', {icon: 9});
+                            }
+                        }
+                    });
+                }, function () {
+                    layer.msg('取消撤回', {icon: 9});
+                });
+            },
+            getBuilding: function () {
+                $.ajax({
+                    url: "/bed/getBuilding",
+                    type: "GET",
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        vm.building = data
+                    }
+                });
+            },
+            getRoom: function (buildingNo) {
+                this.room=''
+                this.bed=''
+                $.ajax({
+                    url: "/bed/getRoom",
+                    type: "GET",
+                    data: {buildingNo: buildingNo},
+                    dataType: "json",
+                    success: function (data) {
+                        vm.room = data
+                    }
+                });
+            },
+            getBed: function (roomNo, buildingNo) {
+                this.bed=''
+                $.ajax({
+                    url: "/bed/getBed",
+                    type: "GET",
+                    data: {buildingNo: buildingNo, roomNo: roomNo},
+                    dataType: "json",
+                    success: function (data) {
+                        vm.bed = data
+                    }
+                });
+            }
+
+        }
+    });
+
+</script>
+</body>
+</html>
